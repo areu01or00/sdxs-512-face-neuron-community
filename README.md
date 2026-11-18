@@ -1,19 +1,10 @@
-# Model neuron communities
+# SDXS-512 face neuron community
 
-Neuron communities found by an agent (Claude Opus) inside generative models: small groups of neurons that do one job together,
-and that change the output when they are switched on. Each folder is one model and one community, with the neuron list and a script to reproduce it.
-
-| folder | model | community | what it does |
-|---|---|---|---|
-| [sdxs-512-face](sdxs-512-face) | [IDKiro/sdxs-512-dreamshaper](https://huggingface.co/IDKiro/sdxs-512-dreamshaper) (one-step image model) | 2,000 neurons, 8.7% of the UNet's feed-forward neurons | paints the person: turned toward you, with a clear face |
+A neuron community found by an agent (Claude Opus) inside [IDKiro/sdxs-512-dreamshaper](https://huggingface.co/IDKiro/sdxs-512-dreamshaper), a one-step image model: 2,000 neurons that, switched on, make the model paint the person, turned toward you, with a clear face.
 
 Related: [qwen-tts-neuron-mapping](https://github.com/areu01or00/qwen-tts-neuron-mapping) (human-speech neurons in Qwen3-TTS).
 
----
-
-# SDXS-512: the face community
-
-https://github.com/areu01or00/model-neuron-communities/raw/main/sdxs-512-face/demo.mp4
+https://github.com/areu01or00/sdxs-512-face-neuron-community/raw/main/demo.mp4
 
 Left: base. Middle: base with only the face community switched on. Right: the full edit it comes from. Same prompt, same seed.
 Seeds 800-803, not used to find the community, not picked.
@@ -21,7 +12,7 @@ Seeds 800-803, not used to find the community, not picked.
 ## The neurons
 
 2,000 GEGLU neurons in the three 16×16 transformer blocks of the UNet, where the picture's layout is decided
-([face_community.json](sdxs-512-face/face_community.json), block → neuron indices):
+([face_community.json](face_community.json), block → neuron indices):
 
 | block | neurons | of |
 |---|---|---|
@@ -35,7 +26,7 @@ The UNet has 23,040 such neurons in all; the community is 8.7% of them.
 ## How it is switched on
 
 The community comes from a people edit: 768 values added to the text encoder's `final_layer_norm.bias`
-([people_bias_delta.npy](sdxs-512-face/people_bias_delta.npy)). For a prompt and seed:
+([people_bias_delta.npy](people_bias_delta.npy)). For a prompt and seed:
 
 1. run the model with the edit and record the community's activations;
 2. run the base model (base text encoder, base prompt) and replace only those 2,000 activations with the recorded ones.
@@ -74,7 +65,6 @@ The 32×32 blocks that follow, where faces get their fine detail, carry none of 
 
 ```
 pip install torch diffusers transformers numpy pillow
-cd sdxs-512-face
 python reproduce.py "a young man standing in a field at dusk holding a lantern" --seed 800
 ```
 
